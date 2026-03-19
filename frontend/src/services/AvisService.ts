@@ -1,6 +1,7 @@
 const API_BASE_URL = "http://localhost:3000/api";
 
 export interface Comment {
+  id: string;
   author_id: string;
   author: string;
   message: string;
@@ -125,6 +126,22 @@ export async function deleteAvis(avisId: string): Promise<{ message: string }> {
 
   if (!response.ok) {
     throw new Error(data.error ?? "Erreur lors de la suppression de l'avis");
+  }
+
+  return data;
+}
+
+export async function deleteCommentAvis(avisId: string, commentId: string): Promise<{ message: string }> {
+  // Suppression d'un commentaire autorisee uniquement pour son auteur cote backend.
+  const response = await fetch(`${API_BASE_URL}/avis/${avisId}/comment/${commentId}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error ?? "Erreur lors de la suppression du commentaire");
   }
 
   return data;

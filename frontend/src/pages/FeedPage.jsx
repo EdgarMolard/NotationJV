@@ -287,6 +287,7 @@ export default function FeedPage() {
 							key={review.id}
 							review={review}
 							isConnected={isConnected}
+							currentUserId={userId}
 							canDelete={isConnected && review.author_id === userId}
 							onCommentSuccess={handleCommentSuccess}
 							onDeleteSuccess={handleDeleteSuccess}

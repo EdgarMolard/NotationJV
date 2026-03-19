@@ -177,6 +177,7 @@ app.get("/api/avis", async (req, res) => {
         // Associe les commentaires a chaque avis pour eviter un second appel API cote client.
         const commentsResult = await pool.query(
           `SELECT 
+            c.id_com as id,
             c.id as author_id,
             u.pseudo as author,
             c.message,
@@ -266,7 +267,7 @@ app.post("/api/avis/:id/comment", verifyAuth, async (req: AuthRequest, res) => {
     const result = await pool.query(
       `INSERT INTO commente (id, id_avis, id_com, message, date_com) 
        VALUES ($1, $2, gen_random_uuid(), $3, NOW()) 
-       RETURNING id as author_id, id_avis, message, date_com as date_creation`,
+       RETURNING id_com as id, id as author_id, id_avis, message, date_com as date_creation`,
       [userId, avisId, contenu]
     );
 
@@ -277,6 +278,48 @@ app.post("/api/avis/:id/comment", verifyAuth, async (req: AuthRequest, res) => {
       avisId: req.params.id,
       userId: req.userId,
       body: req.body,
+      error,
+    });
+
+    const message = error instanceof Error ? error.message : "Erreur inconnue";
+    res.status(500).json({ error: "Erreur de base de données", message });
+  }
+});
+
+app.delete("/api/avis/:avisId/comment/:commentId", verifyAuth, async (req: AuthRequest, res) => {
+  try {
+    const userId = req.userId;
+    const avisId = req.params.avisId;
+    const commentId = req.params.commentId;
+
+    if (!userId) {
+      return res.status(400).json({ error: "userId invalide" });
+    }
+
+    const commentResult = await pool.query(
+      "SELECT id FROM commente WHERE id_avis = $1 AND id_com = $2",
+      [avisId, commentId]
+    );
+
+    if (commentResult.rows.length === 0) {
+      return res.status(404).json({ error: "Commentaire introuvable" });
+    }
+
+    if (commentResult.rows[0].id !== userId) {
+      return res.status(403).json({ error: "Vous ne pouvez supprimer que vos propres commentaires" });
+    }
+
+    await pool.query(
+      "DELETE FROM commente WHERE id_avis = $1 AND id_com = $2",
+      [avisId, commentId]
+    );
+
+    res.status(200).json({ message: "Commentaire supprimé" });
+  } catch (error: unknown) {
+    console.error("[DELETE /api/avis/:avisId/comment/:commentId] Erreur DB", {
+      avisId: req.params.avisId,
+      commentId: req.params.commentId,
+      userId: req.userId,
       error,
     });
 

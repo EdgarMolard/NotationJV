@@ -1,10 +1,11 @@
 import { useState, FormEvent, ChangeEvent } from "react";
-import { Avis, likeAvis, commentAvis, deleteAvis } from "../services/AvisService";
+import { Avis, likeAvis, commentAvis, deleteAvis, deleteCommentAvis } from "../services/AvisService";
 import "../styles/ReviewCard.css";
 
 interface ReviewCardProps {
   review: Avis;
   isConnected: boolean;
+  currentUserId?: string;
   canDelete?: boolean;
   onLikeSuccess?: () => void;
   onCommentSuccess?: () => void;
@@ -14,6 +15,7 @@ interface ReviewCardProps {
 export default function ReviewCard({
   review,
   isConnected,
+  currentUserId,
   canDelete = false,
   onLikeSuccess,
   onCommentSuccess,
@@ -26,6 +28,7 @@ export default function ReviewCard({
   const [isLoadingLike, setIsLoadingLike] = useState<boolean>(false);
   const [isLoadingComment, setIsLoadingComment] = useState<boolean>(false);
   const [isLoadingDelete, setIsLoadingDelete] = useState<boolean>(false);
+  const [deletingCommentId, setDeletingCommentId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleLike = async () => {
@@ -103,6 +106,26 @@ export default function ReviewCard({
       setError(message);
     } finally {
       setIsLoadingDelete(false);
+    }
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    const isConfirmed = window.confirm("Confirmer la suppression de ce commentaire ?");
+    if (!isConfirmed) {
+      return;
+    }
+
+    setDeletingCommentId(commentId);
+    setError(null);
+
+    try {
+      await deleteCommentAvis(review.id, commentId);
+      onCommentSuccess?.();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Erreur lors de la suppression du commentaire";
+      setError(message);
+    } finally {
+      setDeletingCommentId(null);
     }
   };
 
@@ -204,11 +227,23 @@ export default function ReviewCard({
         <div className="comments-section">
           <h5 className="comments-title">Commentaires ({review.comments.length})</h5>
           <div className="comments-list">
-            {review.comments.map((comment, index) => (
-              <div key={index} className="comment-item">
+            {review.comments.map((comment) => (
+              <div key={comment.id} className="comment-item">
                 <div className="comment-header">
                   <strong className="comment-author">{comment.author}</strong>
-                  <span className="comment-date">{formatDate(comment.date_creation)}</span>
+                  <div className="comment-header-right">
+                    <span className="comment-date">{formatDate(comment.date_creation)}</span>
+                    {isConnected && currentUserId && comment.author_id === currentUserId && (
+                      <button
+                        type="button"
+                        className="comment-delete-btn"
+                        onClick={() => handleDeleteComment(comment.id)}
+                        disabled={deletingCommentId === comment.id}
+                      >
+                        {deletingCommentId === comment.id ? "Suppression..." : "Supprimer"}
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <p className="comment-text">{comment.message}</p>
               </div>
