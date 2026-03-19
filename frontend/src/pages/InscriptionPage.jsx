@@ -8,8 +8,9 @@ export default function InscriptionPage() {
 
   const onSubmit = async (event) => {
     event.preventDefault();
+    const form = event.currentTarget;
 
-    const formData = new FormData(event.currentTarget);
+    const formData = new FormData(form);
     const username = String(formData.get("username") ?? "");
     const email = String(formData.get("email") ?? "");
     const password = String(formData.get("password") ?? "");
@@ -27,7 +28,7 @@ export default function InscriptionPage() {
       await createUser({ username, email, password });
       setErrors([]);
       setSuccessMessage("Compte créé avec succès.");
-      event.currentTarget.reset();
+      form.reset();
     } catch (error) {
       const message = error instanceof Error ? error.message : "Erreur lors de l'inscription.";
       setSuccessMessage("");
