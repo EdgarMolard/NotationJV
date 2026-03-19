@@ -1,8 +1,38 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { createUser, validateInscriptionPassword } from "../services/InscriptionSerivce";
 
 export default function InscriptionPage() {
-  const onSubmit = (event) => {
+  const [errors, setErrors] = useState([]);
+  const [successMessage, setSuccessMessage] = useState("");
+
+  const onSubmit = async (event) => {
     event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const username = String(formData.get("username") ?? "");
+    const email = String(formData.get("email") ?? "");
+    const password = String(formData.get("password") ?? "");
+    const passwordConfirm = String(formData.get("confirmPassword") ?? "");
+
+    const validation = validateInscriptionPassword(password, passwordConfirm);
+
+    if (!validation.isValid) {
+      setSuccessMessage("");
+      setErrors(validation.errors);
+      return;
+    }
+
+    try {
+      await createUser({ username, email, password });
+      setErrors([]);
+      setSuccessMessage("Compte créé avec succès.");
+      event.currentTarget.reset();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erreur lors de l'inscription.";
+      setSuccessMessage("");
+      setErrors([message]);
+    }
   };
 
   return (
@@ -27,6 +57,18 @@ export default function InscriptionPage() {
 
           <button type="submit">S'inscrire</button>
         </form>
+
+        {errors.length > 0 && (
+          <div className="auth-errors" role="alert" aria-live="polite">
+            {errors.map((error) => (
+              <p key={error}>{error}</p>
+            ))}
+          </div>
+        )}
+
+        {successMessage && (
+          <p className="auth-success" role="status" aria-live="polite">{successMessage}</p>
+        )}
 
         <p className="helper">
           Deja un compte ? <Link className="auth-link" to="/connexion">Se connecter</Link>
