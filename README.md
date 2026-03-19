@@ -40,10 +40,24 @@ node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 npm run db:up
 ```
 
+Au premier lancement (volume vide), PostgreSQL importe automatiquement le dump SQL versionne dans:
+
+```text
+database/init/001_init.sql
+```
+
+Cela permet d'avoir des donnees de demo directement apres le premier build du projet.
+
 Arret de la base:
 
 ```bash
 npm run db:down
+```
+
+Reinitialiser la base (supprime le volume Docker puis reimporte le dump):
+
+```bash
+npm run db:reset
 ```
 
 ## Lancer le frontend + backend en local
@@ -91,3 +105,12 @@ Cette commande lance:
 ## Connexion bdd
 
 docker compose exec db psql -U postgres -d notationjv
+
+## Regenerer le dump SQL de demo
+
+Si tu modifies les donnees et que tu veux mettre a jour le dump fourni au projet:
+
+```bash
+mkdir -p database/init
+docker compose exec -T db sh -lc 'pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" --clean --if-exists --no-owner --no-privileges --inserts --column-inserts' > database/init/001_init.sql
+```
