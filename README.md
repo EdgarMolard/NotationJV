@@ -1,4 +1,4 @@
-# NotationJV
+# Ygrec
 
 Base de projet full-stack avec:
 - Frontend React (Vite)
@@ -104,7 +104,7 @@ Cette commande lance:
 
 ## Connexion bdd
 
-docker compose exec db psql -U postgres -d notationjv
+docker compose exec db psql -U postgres -d ygrec
 
 ## Regenerer le dump SQL de demo
 

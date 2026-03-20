@@ -49,7 +49,7 @@ const pool = new Pool({
   port: Number.parseInt(process.env.DB_PORT ?? "5432", 10),
   user: process.env.DB_USER ?? "postgres",
   password: process.env.DB_PASSWORD ?? "postgres",
-  database: process.env.DB_NAME ?? "notationjv"
+  database: process.env.DB_NAME ?? "ygrec"
 });
 
 app.get("/health", async (_req, res) => {

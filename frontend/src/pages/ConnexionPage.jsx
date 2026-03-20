@@ -33,7 +33,7 @@ export default function ConnexionPage() {
         <div className="auth-topbar">
           <Link className="auth-home-link" to="/feed">Home</Link>
         </div>
-        <p className="kicker">NotationJV</p>
+        <p className="kicker">Ygrec</p>
         <h1>Connexion</h1>
         <p className="subtitle">Connecte-toi pour acceder a ton espace.</p>
 
