@@ -140,8 +140,14 @@ export default function ReviewCard({
 
   const formatDate = (dateString: string) => {
     try {
-      // Format d'affichage homogene en francais sur tout le feed.
-      return new Date(dateString).toLocaleDateString("fr-FR");
+      // Format d'affichage homogene en francais sur tout le feed (date + heure).
+      return new Date(dateString).toLocaleString("fr-FR", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
     } catch {
       // Fallback: conserve la valeur brute si le parsing echoue.
       return dateString;

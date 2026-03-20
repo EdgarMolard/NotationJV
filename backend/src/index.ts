@@ -162,7 +162,7 @@ app.get("/api/avis", async (req, res) => {
       LEFT JOIN utilisateur u ON a.id = u.id
       LEFT JOIN jaime j ON a.id_avis = j.id_avis
       GROUP BY a.id_avis, u.id
-      ORDER BY a.date_creation DESC
+      ORDER BY a.date_creation DESC, a.id_avis DESC
       LIMIT $1 OFFSET $2`,
       [limit, offset]
     );

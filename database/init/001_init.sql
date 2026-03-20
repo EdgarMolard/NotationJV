@@ -46,7 +46,7 @@ CREATE TABLE public.avis (
     nombre_heures integer,
     titre text,
     message text,
-    date_creation date,
+    date_creation timestamp with time zone,
     id uuid NOT NULL
 );
 
@@ -60,7 +60,7 @@ CREATE TABLE public.commente (
     id_avis uuid NOT NULL,
     id_com uuid,
     message character varying(300),
-    date_com timestamp without time zone
+    date_com timestamp with time zone
 );
 
 
@@ -71,7 +71,7 @@ CREATE TABLE public.commente (
 CREATE TABLE public.jaime (
     id uuid NOT NULL,
     id_avis uuid NOT NULL,
-    date_like date
+    date_like timestamp with time zone
 );
 
 
@@ -92,17 +92,17 @@ CREATE TABLE public.utilisateur (
 -- Data for Name: avis; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.avis (id_avis, stars, nom_jeu, nombre_heures, titre, message, date_creation, id) VALUES ('3bf3e6f1-12e9-4f91-aa7f-64f2eb14ec83', 5.0, 'Elden Ring', 200, 'Le meilleur jeu de tout les temps ?', 'Les décors sont superbes et l''aventure incroyable, je le recommande fortement !', '2026-03-20', 'f3f4d193-d839-4d08-bba5-522a26721c81');
-INSERT INTO public.avis (id_avis, stars, nom_jeu, nombre_heures, titre, message, date_creation, id) VALUES ('8911092a-47d7-4b65-acdd-cd9e6d632175', 3.0, 'Final Fantasy 32', 30, 'Bon...', 'Ca devient répétitif ce 32ème opus, je ne suis pas sûr de recommander celui la...', '2026-03-20', 'f3f4d193-d839-4d08-bba5-522a26721c81');
-INSERT INTO public.avis (id_avis, stars, nom_jeu, nombre_heures, titre, message, date_creation, id) VALUES ('633cea79-4c9c-45f3-b489-7d4e5eaaea09', 1.0, 'Honkai Star Rail (HSR)', 1000, 'Ce jeu est un casino caché', 'Les gars, ne jouez surtout pas, j''ai perdu beaucoup trop d''argent sur cette nullitée sans nom', '2026-03-20', 'f3f4d193-d839-4d08-bba5-522a26721c81');
-INSERT INTO public.avis (id_avis, stars, nom_jeu, nombre_heures, titre, message, date_creation, id) VALUES ('31bec147-2513-4a6d-8fb9-a2da896856e5', 4.0, 'Celeste', 60, 'Un plateforme formidable', 'Ce jeu plateformer est incroyable avec sa DA et ses dessins fou, il y a une vraie expérience avec ce jeu, je vous le recommande tellement !!!', '2026-03-20', 'f3f4d193-d839-4d08-bba5-522a26721c81');
-INSERT INTO public.avis (id_avis, stars, nom_jeu, nombre_heures, titre, message, date_creation, id) VALUES ('8f81409a-876b-4385-a3f5-f3591a482b7b', 5.0, 'avis a supr pour test admin', 0, 'test', 'test', '2026-03-20', 'f3f4d193-d839-4d08-bba5-522a26721c81');
-INSERT INTO public.avis (id_avis, stars, nom_jeu, nombre_heures, titre, message, date_creation, id) VALUES ('96eae2c5-c882-4423-8a13-e03c3a7262ba', 4.5, 'Uncharted 3', 100, 'Le meilleurs opus de la saga ! et de loin', 'Les gars il faut jouer à ce jeu et son mode histoire, c''est vraiment génial de se retrouver dans la peau d''un chercheur de trésor avec toutes ses péripécies !!', '2026-03-20', '1e905250-553f-4f15-b1b2-b99be312e277');
-INSERT INTO public.avis (id_avis, stars, nom_jeu, nombre_heures, titre, message, date_creation, id) VALUES ('a5a5b754-7867-46ac-b4d5-ae2caf14436b', 2.0, 'Valorant', 200, 'CSGO en moins bien ?', 'Tout simplement moins bon que counter strike, avec un gameplay brouillon, et une commu toxique et assez jeune', '2026-03-20', '1e905250-553f-4f15-b1b2-b99be312e277');
-INSERT INTO public.avis (id_avis, stars, nom_jeu, nombre_heures, titre, message, date_creation, id) VALUES ('6c53782b-1cf5-4bad-a564-808352274788', 5.0, 'Rust', 1050, 'Le meilleurs jeux de survie PVP', 'Tuer un Russe tout nu sur la plage ? Le looter, construire une base, Raid une autre base, se faire raid et repartir de 0, tout nu, sur la plage, un pur jeu de survie !! acheter le en promo par contre !', '2026-03-20', '1e905250-553f-4f15-b1b2-b99be312e277');
-INSERT INTO public.avis (id_avis, stars, nom_jeu, nombre_heures, titre, message, date_creation, id) VALUES ('b72dc672-24c9-41ec-a0ac-6b6018e4a9fe', 5.0, 'Minecraft', 3000, 'Que dire...', 'Le jeu est le plus vendu de tout les temps, il est indémodable et l''amusement ainsi que les possibilitées sont infinies !!! encore plus avec les mods, la communauté fait évoluer le jeu c''est incroyable !!', '2026-03-20', '896a961b-861f-4aa9-8d6d-93bba7bd857c');
-INSERT INTO public.avis (id_avis, stars, nom_jeu, nombre_heures, titre, message, date_creation, id) VALUES ('8734ea19-566d-474c-b863-a8d2eb0b75c8', 3.0, 'Paladium', 53, 'Un nouveau modpack COMPLET', 'Le nouveau serveur paladium francais avec le modpack paladium est vraiment sympa mais il faut aimer le pvp ... ! je recommande pour les amateurs de ce type de gameplay', '2026-03-20', '896a961b-861f-4aa9-8d6d-93bba7bd857c');
-INSERT INTO public.avis (id_avis, stars, nom_jeu, nombre_heures, titre, message, date_creation, id) VALUES ('046d14ad-fbf7-4718-a568-4cfa0db3b0b2', 1.0, 'Roblox', 5, 'Une fraude :''|', 'une copie tout simplement naze de minecraft ! honte, procès !!', '2026-03-20', '896a961b-861f-4aa9-8d6d-93bba7bd857c');
+INSERT INTO public.avis (id_avis, stars, nom_jeu, nombre_heures, titre, message, date_creation, id) VALUES ('3bf3e6f1-12e9-4f91-aa7f-64f2eb14ec83', 5.0, 'Elden Ring', 200, 'Le meilleur jeu de tout les temps ?', 'Les décors sont superbes et l''aventure incroyable, je le recommande fortement !', '2026-03-20 09:05:00+00', 'f3f4d193-d839-4d08-bba5-522a26721c81');
+INSERT INTO public.avis (id_avis, stars, nom_jeu, nombre_heures, titre, message, date_creation, id) VALUES ('8911092a-47d7-4b65-acdd-cd9e6d632175', 3.0, 'Final Fantasy 32', 30, 'Bon...', 'Ca devient répétitif ce 32ème opus, je ne suis pas sûr de recommander celui la...', '2026-03-20 09:22:00+00', 'f3f4d193-d839-4d08-bba5-522a26721c81');
+INSERT INTO public.avis (id_avis, stars, nom_jeu, nombre_heures, titre, message, date_creation, id) VALUES ('633cea79-4c9c-45f3-b489-7d4e5eaaea09', 1.0, 'Honkai Star Rail (HSR)', 1000, 'Ce jeu est un casino caché', 'Les gars, ne jouez surtout pas, j''ai perdu beaucoup trop d''argent sur cette nullitée sans nom', '2026-03-20 09:41:00+00', 'f3f4d193-d839-4d08-bba5-522a26721c81');
+INSERT INTO public.avis (id_avis, stars, nom_jeu, nombre_heures, titre, message, date_creation, id) VALUES ('31bec147-2513-4a6d-8fb9-a2da896856e5', 4.0, 'Celeste', 60, 'Un plateforme formidable', 'Ce jeu plateformer est incroyable avec sa DA et ses dessins fou, il y a une vraie expérience avec ce jeu, je vous le recommande tellement !!!', '2026-03-20 10:03:00+00', 'f3f4d193-d839-4d08-bba5-522a26721c81');
+INSERT INTO public.avis (id_avis, stars, nom_jeu, nombre_heures, titre, message, date_creation, id) VALUES ('8f81409a-876b-4385-a3f5-f3591a482b7b', 5.0, 'avis a supr pour test admin', 0, 'test', 'test', '2026-03-20 10:14:00+00', 'f3f4d193-d839-4d08-bba5-522a26721c81');
+INSERT INTO public.avis (id_avis, stars, nom_jeu, nombre_heures, titre, message, date_creation, id) VALUES ('96eae2c5-c882-4423-8a13-e03c3a7262ba', 4.5, 'Uncharted 3', 100, 'Le meilleurs opus de la saga ! et de loin', 'Les gars il faut jouer à ce jeu et son mode histoire, c''est vraiment génial de se retrouver dans la peau d''un chercheur de trésor avec toutes ses péripécies !!', '2026-03-20 10:28:00+00', '1e905250-553f-4f15-b1b2-b99be312e277');
+INSERT INTO public.avis (id_avis, stars, nom_jeu, nombre_heures, titre, message, date_creation, id) VALUES ('a5a5b754-7867-46ac-b4d5-ae2caf14436b', 2.0, 'Valorant', 200, 'CSGO en moins bien ?', 'Tout simplement moins bon que counter strike, avec un gameplay brouillon, et une commu toxique et assez jeune', '2026-03-20 10:46:00+00', '1e905250-553f-4f15-b1b2-b99be312e277');
+INSERT INTO public.avis (id_avis, stars, nom_jeu, nombre_heures, titre, message, date_creation, id) VALUES ('6c53782b-1cf5-4bad-a564-808352274788', 5.0, 'Rust', 1050, 'Le meilleurs jeux de survie PVP', 'Tuer un Russe tout nu sur la plage ? Le looter, construire une base, Raid une autre base, se faire raid et repartir de 0, tout nu, sur la plage, un pur jeu de survie !! acheter le en promo par contre !', '2026-03-20 11:09:00+00', '1e905250-553f-4f15-b1b2-b99be312e277');
+INSERT INTO public.avis (id_avis, stars, nom_jeu, nombre_heures, titre, message, date_creation, id) VALUES ('b72dc672-24c9-41ec-a0ac-6b6018e4a9fe', 5.0, 'Minecraft', 3000, 'Que dire...', 'Le jeu est le plus vendu de tout les temps, il est indémodable et l''amusement ainsi que les possibilitées sont infinies !!! encore plus avec les mods, la communauté fait évoluer le jeu c''est incroyable !!', '2026-03-20 11:31:00+00', '896a961b-861f-4aa9-8d6d-93bba7bd857c');
+INSERT INTO public.avis (id_avis, stars, nom_jeu, nombre_heures, titre, message, date_creation, id) VALUES ('8734ea19-566d-474c-b863-a8d2eb0b75c8', 3.0, 'Paladium', 53, 'Un nouveau modpack COMPLET', 'Le nouveau serveur paladium francais avec le modpack paladium est vraiment sympa mais il faut aimer le pvp ... ! je recommande pour les amateurs de ce type de gameplay', '2026-03-20 11:47:00+00', '896a961b-861f-4aa9-8d6d-93bba7bd857c');
+INSERT INTO public.avis (id_avis, stars, nom_jeu, nombre_heures, titre, message, date_creation, id) VALUES ('046d14ad-fbf7-4718-a568-4cfa0db3b0b2', 1.0, 'Roblox', 5, 'Une fraude :''|', 'une copie tout simplement naze de minecraft ! honte, procès !!', '2026-03-20 12:04:00+00', '896a961b-861f-4aa9-8d6d-93bba7bd857c');
 
 
 --

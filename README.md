@@ -117,6 +117,11 @@ admin: Non
 - admin: Non
 
 4. 
+- username: Samuel
+- password: Motdepasse456!
+- admin: Non
+
+5. 
 - username: Admin
 - password: Motdepasse789!
 - admin: Oui 

@@ -5,6 +5,17 @@ import { fetchAvis, createAvis } from "../services/AvisService";
 import ReviewCard from "../components/ReviewCard";
 import "../styles/FeedPage.css";
 
+function sortReviewsByNewest(first, second) {
+	const firstDate = new Date(first.date_creation).getTime();
+	const secondDate = new Date(second.date_creation).getTime();
+
+	if (firstDate !== secondDate) {
+		return secondDate - firstDate;
+	}
+
+	return String(second.id).localeCompare(String(first.id));
+}
+
 export default function FeedPage() {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [actionError, setActionError] = useState("");
@@ -47,7 +58,7 @@ export default function FeedPage() {
 				const merged = [...prev, ...response.data];
 				const uniqueById = new Map();
 				merged.forEach((item) => uniqueById.set(item.id, item));
-				return Array.from(uniqueById.values());
+				return Array.from(uniqueById.values()).sort(sortReviewsByNewest);
 			});
 			setHasMore(page < response.pagination.pages);
 			setPage((prev) => prev + 1);
@@ -75,7 +86,7 @@ export default function FeedPage() {
 			const response = await fetchAvis(1, 10);
 			const uniqueById = new Map();
 			response.data.forEach((item) => uniqueById.set(item.id, item));
-			setReviews(Array.from(uniqueById.values()));
+			setReviews(Array.from(uniqueById.values()).sort(sortReviewsByNewest));
 			loadedPagesRef.current.add(1);
 			setHasMore(1 < response.pagination.pages);
 			setPage(2);
