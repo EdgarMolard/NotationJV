@@ -6,6 +6,7 @@ interface ReviewCardProps {
   review: Avis;
   isConnected: boolean;
   currentUserId?: string;
+  currentUserIsAdmin?: boolean;
   canDelete?: boolean;
   onLikeSuccess?: () => void;
   onCommentSuccess?: () => void;
@@ -16,6 +17,7 @@ export default function ReviewCard({
   review,
   isConnected,
   currentUserId,
+  currentUserIsAdmin = false,
   canDelete = false,
   onLikeSuccess,
   onCommentSuccess,
@@ -239,7 +241,7 @@ export default function ReviewCard({
                   <strong className="comment-author">{comment.author}</strong>
                   <div className="comment-header-right">
                     <span className="comment-date">{formatDate(comment.date_creation)}</span>
-                    {isConnected && currentUserId && comment.author_id === currentUserId && (
+                    {isConnected && (currentUserIsAdmin || (currentUserId && comment.author_id === currentUserId)) && (
                       <button
                         type="button"
                         className="comment-delete-btn"

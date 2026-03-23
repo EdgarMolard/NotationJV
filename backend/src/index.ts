@@ -20,6 +20,7 @@ app.use(express.json());
 // Middleware d'authentification avec token JWT du cookie
 interface AuthRequest extends Request {
   userId?: string;
+  isAdmin?: boolean;
 }
 
 const verifyAuth = (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -36,7 +37,10 @@ const verifyAuth = (req: AuthRequest, res: Response, next: NextFunction) => {
     if (typeof decoded.userId !== "string") {
       return res.status(403).json({ error: "Token invalide ou expiré", message: "userId JWT invalide" });
     }
+
+    const isAdmin = decoded.user_admin === true;
     req.userId = decoded.userId;
+    req.isAdmin = isAdmin;
     next();
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Token invalide";
@@ -98,7 +102,7 @@ app.post("/api/login", async (req, res) => {
     return res.status(400).json({ error: "Champs manquants" });
   }
   try {
-    const result = await pool.query("SELECT id, pseudo, password FROM utilisateur WHERE pseudo = $1", [username]);
+    const result = await pool.query("SELECT id, pseudo, password, is_admin FROM utilisateur WHERE pseudo = $1", [username]);
     if (result.rows.length === 0) {
       return res.status(401).json({ error: "Utilisateur non trouvé" });
     }
@@ -108,7 +112,7 @@ app.post("/api/login", async (req, res) => {
       return res.status(401).json({ error: "Mot de passe incorrect" });
     }
     const token = jwt.sign(
-      { userId: user.id },
+      { userId: user.id, user_admin: user.is_admin },
       process.env.JWT_SECRET ?? "secret",
       { expiresIn: "1h" }
     );
@@ -136,6 +140,35 @@ app.post("/api/logout", (_req, res) => {
   });
 
   res.status(200).json({ message: "Déconnexion réussie" });
+});
+
+app.get("/api/me", verifyAuth, async (req: AuthRequest, res) => {
+  try {
+    const userId = req.userId;
+
+    if (!userId) {
+      return res.status(400).json({ error: "userId invalide" });
+    }
+
+    const result = await pool.query(
+      "SELECT id, pseudo, is_admin FROM utilisateur WHERE id = $1",
+      [userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Utilisateur introuvable" });
+    }
+
+    const user = result.rows[0];
+    res.status(200).json({
+      userId: user.id,
+      username: user.pseudo,
+      isAdmin: Boolean(user.is_admin),
+    });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Erreur inconnue";
+    res.status(500).json({ error: "Erreur de base de données", message });
+  }
 });
 
 app.get("/api/avis", async (req, res) => {
@@ -289,6 +322,7 @@ app.post("/api/avis/:id/comment", verifyAuth, async (req: AuthRequest, res) => {
 app.delete("/api/avis/:avisId/comment/:commentId", verifyAuth, async (req: AuthRequest, res) => {
   try {
     const userId = req.userId;
+    const isAdmin = req.isAdmin === true;
     const avisId = req.params.avisId;
     const commentId = req.params.commentId;
 
@@ -305,7 +339,7 @@ app.delete("/api/avis/:avisId/comment/:commentId", verifyAuth, async (req: AuthR
       return res.status(404).json({ error: "Commentaire introuvable" });
     }
 
-    if (commentResult.rows[0].id !== userId) {
+    if (commentResult.rows[0].id !== userId && !isAdmin) {
       return res.status(403).json({ error: "Vous ne pouvez supprimer que vos propres commentaires" });
     }
 
@@ -369,6 +403,7 @@ app.delete("/api/avis/:id", verifyAuth, async (req: AuthRequest, res) => {
 
   try {
     const userId = req.userId;
+    const isAdmin = req.isAdmin === true;
     const avisId = req.params.id;
 
     if (!userId) {
@@ -388,7 +423,7 @@ app.delete("/api/avis/:id", verifyAuth, async (req: AuthRequest, res) => {
       return res.status(404).json({ error: "Avis introuvable" });
     }
 
-    if (ownerResult.rows[0].id !== userId) {
+    if (ownerResult.rows[0].id !== userId && !isAdmin) {
       await client.query("ROLLBACK");
       return res.status(403).json({ error: "Vous ne pouvez supprimer que vos propres avis" });
     }

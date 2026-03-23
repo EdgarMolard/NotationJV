@@ -1,6 +1,6 @@
-import { useMemo, useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { logout } from "../services/ConnexionService";
+import { getCurrentUser, logout } from "../services/ConnexionService";
 import { fetchAvis, createAvis } from "../services/AvisService";
 import ReviewCard from "../components/ReviewCard";
 import "../styles/FeedPage.css";
@@ -20,9 +20,11 @@ export default function FeedPage() {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [actionError, setActionError] = useState("");
 	const navigate = useNavigate();
-	const username = useMemo(() => localStorage.getItem("username") ?? "", []);
-	const userId = useMemo(() => localStorage.getItem("userId") ?? "", []);
-	const isConnected = username.length > 0;
+	const [currentUser, setCurrentUser] = useState(null);
+	const isConnected = currentUser !== null;
+	const username = currentUser?.username ?? "";
+	const userId = currentUser?.userId ?? "";
+	const isAdmin = currentUser?.isAdmin === true;
 
 	// États pour les avis
 	const [reviews, setReviews] = useState([]);
@@ -104,6 +106,29 @@ export default function FeedPage() {
 		loadMore();
 	}, []);
 
+	useEffect(() => {
+		let isMounted = true;
+
+		const loadCurrentUser = async () => {
+			try {
+				const user = await getCurrentUser();
+				if (isMounted) {
+					setCurrentUser(user);
+				}
+			} catch {
+				if (isMounted) {
+					setCurrentUser(null);
+				}
+			}
+		};
+
+		loadCurrentUser();
+
+		return () => {
+			isMounted = false;
+		};
+	}, []);
+
 	// Infinite scroll avec Intersection Observer
 	useEffect(() => {
 		const observer = new IntersectionObserver(
@@ -129,6 +154,7 @@ export default function FeedPage() {
 	const handleLogout = async () => {
 		try {
 			await logout();
+			setCurrentUser(null);
 			setIsMenuOpen(false);
 			navigate("/connexion");
 		} catch (err) {
@@ -299,7 +325,8 @@ export default function FeedPage() {
 							review={review}
 							isConnected={isConnected}
 							currentUserId={userId}
-							canDelete={isConnected && review.author_id === userId}
+							currentUserIsAdmin={isAdmin}
+							canDelete={isConnected && (isAdmin || review.author_id === userId)}
 							onCommentSuccess={handleCommentSuccess}
 							onDeleteSuccess={handleDeleteSuccess}
 						/>
